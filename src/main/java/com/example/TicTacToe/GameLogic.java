@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//in questa classe a parte ci metti la logica
 public class GameLogic {
 
     public CellStatus[][] gameTable = new CellStatus[3][3];

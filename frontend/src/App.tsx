@@ -2,13 +2,13 @@ import axios from "axios";
 import React from "react";
 import {Button, Chip} from "@mui/material";
 
-enum Cell { X = 'X', O = 'O', Empty = 'Empty' }
+enum CellStatus { X = 'X', O = 'O', Empty = 'Empty' }
 
 enum Player { X = 'X', O = 'O' }
 
-type TicTacToeMove = {
+type TicTacToe = {
     player: Player,
-    board: Cell[][],
+    gameTable: CellStatus[][],
     winner: Player | null,
     valid: boolean,
     draw: boolean,
@@ -19,17 +19,17 @@ const newGame = () => axios.get('http://localhost:8080/TicTacToeGame').then(res 
 const makeMove = (i: number, j: number) => axios.post(`http://localhost:8080/TicTacToeMove/${i}/${j}`).then(res => res.data);
 
 export const App = () => {
-    const [move, setMove] = React.useState<TicTacToeMove | null>(null);
+    const [ticTacToe, setTicTacToe] = React.useState<TicTacToe | null>(null);
 
-    React.useEffect(() => void newGame().then(setMove), []);
+    React.useEffect(() => void newGame().then(setTicTacToe), []);
 
-    const Square = ({cell, row, col}: { cell: Cell, row: number, col: number }) => {
+    const Square = ({cell, row, col}: { cell: CellStatus, row: number, col: number }) => {
         return <Button
-            onClick={() => cell === Cell.Empty && makeMove(row, col).then(setMove)}
-            color={cell == Cell.X ? 'error' : cell == Cell.O ? 'success' : 'primary'}
+            onClick={() => cell === CellStatus.Empty && makeMove(row, col).then(setTicTacToe)}
+            color={cell == CellStatus.X ? 'error' : cell == CellStatus.O ? 'success' : 'primary'}
             style={{width: '150px', height: '150px', fontSize: "30px"}}
             variant="contained">
-            {cell == Cell.X ? 'X' : cell == Cell.O ? 'O' : '-'}
+            {cell == CellStatus.X ? 'X' : cell == CellStatus.O ? 'O' : '-'}
         </Button>;
     }
 
@@ -39,7 +39,7 @@ export const App = () => {
               variant="outlined"
               style={{margin: '20px', fontSize: "30px"}}/>
         <Button
-            onClick={() => newGame().then(setMove)}
+            onClick={() => newGame().then(setTicTacToe)}
             color="primary"
             variant="contained"
             style={{margin: '20px'}}>
@@ -53,32 +53,32 @@ export const App = () => {
               variant="outlined"
               style={{margin: '20px', fontSize: "30px"}}/>
 
-    if (!move)
+    if (!ticTacToe)
         return <div>Loading...</div>;
 
     return <div style={{textAlign: "center"}}> {}
         <div>
-            <Square cell={move.board[0][0]} row={0} col={0}/>
-            <Square cell={move.board[0][1]} row={0} col={1}/>
-            <Square cell={move.board[0][2]} row={0} col={2}/>
+            <Square cell={ticTacToe.gameTable[0][0]} row={0} col={0}/>
+            <Square cell={ticTacToe.gameTable[0][1]} row={0} col={1}/>
+            <Square cell={ticTacToe.gameTable[0][2]} row={0} col={2}/>
         </div>
         <div>
-            <Square cell={move.board[1][0]} row={1} col={0}/>
-            <Square cell={move.board[1][1]} row={1} col={1}/>
-            <Square cell={move.board[1][2]} row={1} col={2}/>
+            <Square cell={ticTacToe.gameTable[1][0]} row={1} col={0}/>
+            <Square cell={ticTacToe.gameTable[1][1]} row={1} col={1}/>
+            <Square cell={ticTacToe.gameTable[1][2]} row={1} col={2}/>
         </div>
         <div>
-            <Square cell={move.board[2][0]} row={2} col={0}/>
-            <Square cell={move.board[2][1]} row={2} col={1}/>
-            <Square cell={move.board[2][2]} row={2} col={2}/>
-        </div>
-
-        <div>
-            {move.gameOver && <Outcome winner={move.winner}/>}
+            <Square cell={ticTacToe.gameTable[2][0]} row={2} col={0}/>
+            <Square cell={ticTacToe.gameTable[2][1]} row={2} col={1}/>
+            <Square cell={ticTacToe.gameTable[2][2]} row={2} col={2}/>
         </div>
 
         <div>
-            <CurrentPlayer player={move.player}/>
+            {ticTacToe.gameOver && <Outcome winner={ticTacToe.winner}/>}
+        </div>
+
+        <div>
+            <CurrentPlayer player={ticTacToe.player}/>
         </div>
 
     </div>
